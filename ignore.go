@@ -2,15 +2,9 @@ package dump
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"os"
 
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
-	corelog "github.com/coredns/coredns/plugin/log"
-	"github.com/coredns/coredns/plugin/pkg/dnstest"
-	"github.com/coredns/coredns/plugin/pkg/replacer"
 
 	"github.com/mholt/caddy"
 	"github.com/miekg/dns"
@@ -43,11 +37,12 @@ func setup(c *caddy.Controller) error {
 }
 
 // ServeDNS implements the plugin.Handler interface.
-func (d Dump) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
-	w.
+func (d Ignore) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
+	w.Hijack()
+	w.Close()
 
-	return plugin.NextOrFailure(d.Name(), d.Next, ctx, w, r)
+	return plugin.NextOrFailure(d.Name(), nil, ctx, w, r)
 }
 
 // Name implements the Handler interface.
-func (d Dump) Name() string { return "dump" }
+func (d Ignore) Name() string { return "ignore" }
